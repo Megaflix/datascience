@@ -2,8 +2,15 @@ best <- function(state, outcome) {
 
 ## Read data, select the columns needed and change the column names
 
-data <- read.csv("outcome-of-care-measures.csv", na.strings = "Not Available", stringsAsFactors = FALSE)
-neededData <- data[, c(2, 7, 11, 17, 23)]
+data <- read.csv("outcome-of-care-measures.csv", 
+		 na.strings = "Not Available", 
+		 stringsAsFactors = FALSE)
+	
+neededData <- data[, c("Hospital.Name", 
+		       "State",
+		       "Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack",
+		       "Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure",
+		       "Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia")]
 names(neededData) <- c("hospital", "state", "heart attack", "heart failure", "pneumonia")
 
 ## Check validity of state and outcome.
@@ -25,8 +32,10 @@ neededData <- neededData[neededData$state == state,]
 ## Select the appropriate column based on the input of outcome argument and then sort
 ## it by 1) state, 2) outcome, 3) hospital name
 
-outcomeDataSelected <- neededData[, c(1, 2, posOutcomes[outcome])]
-orderedODS <- outcomeDataSelected[order(outcomeDataSelected[,2], outcomeDataSelected[,3], outcomeDataSelected[,1]),]
+outcomeDataSelected <- neededData[, c("hospital", "state", names(posOutcomes[outcome]))]
+orderedODS <- outcomeDataSelected[order(outcomeDataSelected[,"state"], 
+                                        outcomeDataSelected[,names(posOutcomes[outcome])], 
+                                        outcomeDataSelected[,"hospital"]),]
 
 ## Split in multiple data frames, one for each state
 ## splitbystate <- split(orderedODS, orderedODS[,2])
@@ -34,7 +43,7 @@ orderedODS <- outcomeDataSelected[order(outcomeDataSelected[,2], outcomeDataSele
 ## Return hospital name in that state with lowest 30-day death
 ## rate
 
-orderedODS[1,1]
+orderedODS[1,"hospital"]
 }
 
 }
